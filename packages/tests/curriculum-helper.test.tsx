@@ -485,6 +485,17 @@ describe("functionRegex", () => {
     expect(regEx.test("function myFunc(arg1, arg3){}")).toBe(false);
   });
 
+  it("matches a named function that uses Typescript types", () => {
+    const funcName = "myFunc";
+    const regEx = functionRegex(funcName, [
+      "arg1\\s*:\\s*string",
+      "arg2\\s*:\\s*string",
+    ]);
+    expect(
+      regEx.test("function myFunc(arg1 : string, arg2 : string) : string{}"),
+    ).toBe(true);
+  });
+
   it("matches arrow functions", () => {
     const funcName = "myFunc";
     const regEx = functionRegex(funcName, ["arg1", "arg2"]);
