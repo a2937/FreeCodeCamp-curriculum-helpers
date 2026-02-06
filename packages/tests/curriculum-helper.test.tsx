@@ -491,6 +491,7 @@ describe("functionRegex", () => {
       "arg1\\s*:\\s*string",
       "arg2\\s*:\\s*string",
     ]);
+    console.log(regEx);
     expect(
       regEx.test("function myFunc(arg1 : string, arg2 : string) : string{}"),
     ).toBe(true);

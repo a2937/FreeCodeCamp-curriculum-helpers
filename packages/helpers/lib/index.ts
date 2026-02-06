@@ -253,13 +253,13 @@ export function functionRegex(
     : "";
   const body = "[^}]*";
 
-  const funcREHead = `function\\s*${normalFunctionName}\\s*\\(\\s*${params}\\s*\\)\\s*.*\\{`;
+  const funcREHead = `function\\s*${normalFunctionName}\\s*\\(\\s*${params}\\s*\\)\\s*[\\w\\W]*\\{`;
   const funcREBody = `${body}\\}`;
   const funcRegEx = includeBody
     ? `${funcREHead}${funcREBody}`
     : `${funcREHead}`;
 
-  const arrowFuncREHead = `${arrowFunctionName}\\(?\\s*${params}\\s*\\)?\\s*.*=>\\s*\\{?`;
+  const arrowFuncREHead = `${arrowFunctionName}\\(?\\s*${params}\\s*\\)?\\s*[\\w\\W]*=>\\s*\\{?`;
   const arrowFuncREBody = `${body}\\}?`;
   const arrowFuncRegEx = includeBody
     ? `${arrowFuncREHead}${arrowFuncREBody}`
@@ -268,7 +268,7 @@ export function functionRegex(
   const anonymousFunctionName = funcName
     ? `(let|const|var)?\\s?${escapeRegExp(funcName)}\\s*=\\s*function\\s*`
     : "";
-  const anonymousFuncREHead = `${anonymousFunctionName}\\(\\s*${params}\\s*\\)\\s*.*\\{`;
+  const anonymousFuncREHead = `${anonymousFunctionName}\\(\\s*${params}\\s*\\)\\s*[\\w\\W]*\\{`;
   const anonymousFuncRegEx = includeBody
     ? `${anonymousFuncREHead}${funcREBody}`
     : `${anonymousFuncREHead}`;
