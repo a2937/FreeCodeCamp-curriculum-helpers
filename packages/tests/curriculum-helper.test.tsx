@@ -519,9 +519,29 @@ describe("functionRegex", () => {
     expect(regEx.test("function(arg1, arg2) {}")).toBe(true);
   });
 
+  it("matches anonymous Typescript functions", () => {
+    const regEx = functionRegex(null, [
+      "arg1\\s*:\\s*string",
+      "arg2\\s*:\\s*string",
+    ]);
+    expect(
+      regEx.test("function(arg1 : string , arg2:string) : string {}"),
+    ).toBe(true);
+  });
+
   it("matches anonymous arrow functions", () => {
     const regEx = functionRegex(null, ["arg1", "arg2"]);
     expect(regEx.test("(arg1, arg2) => {}")).toBe(true);
+  });
+
+  it("matches anonymous Typescript arrow functions", () => {
+    const regEx = functionRegex(null, [
+      "arg1\\s*:\\s*string",
+      "arg2\\s*:\\s*string",
+    ]);
+    expect(regEx.test("(arg1 : string, arg2 : string) : string => {}")).toBe(
+      true,
+    );
   });
 
   it("matches let or const declarations if they are present", () => {
@@ -583,6 +603,20 @@ describe("functionRegex", () => {
     expect(match![1]).toBe(
       "myFunc = arg1 => arg1; console.log()\n // captured, unfortunately",
     );
+  });
+
+  it("matches a arrow function that uses Typescript types", () => {
+    const funcName = "myFunc";
+    const regEx = functionRegex(funcName, [
+      "arg1\\s*:\\s*string",
+      "arg2\\s*:\\s*string",
+    ]);
+    console.log(regEx);
+    expect(
+      regEx.test(
+        "myFunc  = (arg1 : string, arg2 : string) : string => {return arg1 + arg2}",
+      ),
+    ).toBe(true);
   });
 
   it("can match just up to the opening bracket for an arrow function", () => {
