@@ -290,6 +290,7 @@ export function functionRegex(
 
 export function typedFunctionRegex(
   funcName: string | null,
+  returnType: string | null,
   paramList?: string[] | null,
   options?: { capture?: boolean; includeBody?: boolean },
 ): RegExp {
@@ -297,19 +298,21 @@ export function typedFunctionRegex(
   const includeBody = options?.includeBody ?? true;
   const params = paramList ? paramList.join("\\s*,\\s*") : "[^)]*";
 
+  const normalReturnType = returnType ? escapeRegExp(returnType) : "";
+
   const normalFunctionName = funcName ? "\\s" + escapeRegExp(funcName) : "";
   const arrowFunctionName = funcName
     ? `(let|const|var)?\\s?${escapeRegExp(funcName)}\\s*.*=\\s*`
     : "";
   const body = "[^}]*";
 
-  const funcREHead = `function\\s*${normalFunctionName}\\s*\\(\\s*${params}\\s*\\)\\s*:?[\\s\\w]*?\\{`;
+  const funcREHead = `function\\s*${normalFunctionName}\\s*\\(\\s*${params}\\s*\\)\\s*:\\s*${escapeRegExp(normalReturnType)}\\s*\\{`;
   const funcREBody = `${body}\\}`;
   const funcRegEx = includeBody
     ? `${funcREHead}${funcREBody}`
     : `${funcREHead}`;
 
-  const arrowFuncREHead = `${arrowFunctionName}\\(?\\s*${params}\\s*\\)?\\s*:?[\\s\\w]*?=>\\s*\\{?`;
+  const arrowFuncREHead = `${arrowFunctionName}\\(?\\s*${params}\\s*\\)?\\s*:\\s*${escapeRegExp(normalReturnType)}\\s*=>\\s*\\{?`;
   const arrowFuncREBody = `${body}\\}?`;
   const arrowFuncRegEx = includeBody
     ? `${arrowFuncREHead}${arrowFuncREBody}`
@@ -318,7 +321,7 @@ export function typedFunctionRegex(
   const anonymousFunctionName = funcName
     ? `(let|const|var)?\\s?${escapeRegExp(funcName)}\\s*=\\s*function\\s*`
     : "";
-  const anonymousFuncREHead = `${anonymousFunctionName}\\(\\s*${params}\\s*\\)\\s*:?[\\s\\w]*?\\{`;
+  const anonymousFuncREHead = `${anonymousFunctionName}\\(\\s*${params}\\s*\\)\\s*:\\s*${escapeRegExp(normalReturnType)}\\s*\\{`;
   const anonymousFuncRegEx = includeBody
     ? `${anonymousFuncREHead}${funcREBody}`
     : `${anonymousFuncREHead}`;

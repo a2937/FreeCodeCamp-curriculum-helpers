@@ -488,7 +488,7 @@ describe("functionRegex", () => {
 
   it("matches a named function that uses Typescript types", () => {
     const funcName = "myFunc";
-    const regEx = typedFunctionRegex(funcName, [
+    const regEx = typedFunctionRegex(funcName, "string", [
       "arg1\\s*:\\s*string",
       "arg2\\s*:\\s*string",
     ]);
@@ -521,7 +521,7 @@ describe("functionRegex", () => {
   });
 
   it("matches anonymous Typescript functions", () => {
-    const regEx = typedFunctionRegex(null, [
+    const regEx = typedFunctionRegex(null, "string", [
       "arg1\\s*:\\s*string",
       "arg2\\s*:\\s*string",
     ]);
@@ -536,7 +536,7 @@ describe("functionRegex", () => {
   });
 
   it("matches anonymous Typescript arrow functions", () => {
-    const regEx = typedFunctionRegex(null, [
+    const regEx = typedFunctionRegex(null, "string", [
       "arg1\\s*:\\s*string",
       "arg2\\s*:\\s*string",
     ]);
@@ -608,11 +608,10 @@ describe("functionRegex", () => {
 
   it("matches a arrow function that uses Typescript types", () => {
     const funcName = "myFunc";
-    const regEx = typedFunctionRegex(funcName, [
+    const regEx = typedFunctionRegex(funcName, "string", [
       "arg1\\s*:\\s*string",
       "arg2\\s*:\\s*string",
     ]);
-    console.log(regEx);
     expect(
       regEx.test(
         "myFunc  = (arg1 : string, arg2 : string) : string => {return arg1 + arg2}",
