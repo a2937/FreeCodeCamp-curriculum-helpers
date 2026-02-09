@@ -8,6 +8,7 @@ import htmlTestValues from "./__fixtures__/curriculum-helpers-html";
 import jsTestValues from "./__fixtures__/curriculum-helpers-javascript";
 import whiteSpaceTestValues from "./__fixtures__/curriculum-helpers-remove-white-space";
 import * as helper from "./../helpers/lib/index";
+import { typedFunctionRegex } from "./../helpers/lib/index";
 
 const { stringWithWhiteSpaceChars, stringWithWhiteSpaceCharsRemoved } =
   whiteSpaceTestValues;
@@ -487,7 +488,7 @@ describe("functionRegex", () => {
 
   it("matches a named function that uses Typescript types", () => {
     const funcName = "myFunc";
-    const regEx = functionRegex(funcName, [
+    const regEx = typedFunctionRegex(funcName, [
       "arg1\\s*:\\s*string",
       "arg2\\s*:\\s*string",
     ]);
@@ -520,7 +521,7 @@ describe("functionRegex", () => {
   });
 
   it("matches anonymous Typescript functions", () => {
-    const regEx = functionRegex(null, [
+    const regEx = typedFunctionRegex(null, [
       "arg1\\s*:\\s*string",
       "arg2\\s*:\\s*string",
     ]);
@@ -535,7 +536,7 @@ describe("functionRegex", () => {
   });
 
   it("matches anonymous Typescript arrow functions", () => {
-    const regEx = functionRegex(null, [
+    const regEx = typedFunctionRegex(null, [
       "arg1\\s*:\\s*string",
       "arg2\\s*:\\s*string",
     ]);
@@ -607,7 +608,7 @@ describe("functionRegex", () => {
 
   it("matches a arrow function that uses Typescript types", () => {
     const funcName = "myFunc";
-    const regEx = functionRegex(funcName, [
+    const regEx = typedFunctionRegex(funcName, [
       "arg1\\s*:\\s*string",
       "arg2\\s*:\\s*string",
     ]);

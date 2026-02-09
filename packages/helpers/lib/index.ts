@@ -253,6 +253,56 @@ export function functionRegex(
     : "";
   const body = "[^}]*";
 
+  const funcREHead = `function\\s*${normalFunctionName}\\s*\\(\\s*${params}\\s*\\)\\s*\\{`;
+  const funcREBody = `${body}\\}`;
+  const funcRegEx = includeBody
+    ? `${funcREHead}${funcREBody}`
+    : `${funcREHead}`;
+
+  const arrowFuncREHead = `${arrowFunctionName}\\(?\\s*${params}\\s*\\)?\\s*=>\\s*\\{?`;
+  const arrowFuncREBody = `${body}\\}?`;
+  const arrowFuncRegEx = includeBody
+    ? `${arrowFuncREHead}${arrowFuncREBody}`
+    : `${arrowFuncREHead}`;
+
+  const anonymousFunctionName = funcName
+    ? `(let|const|var)?\\s?${escapeRegExp(funcName)}\\s*=\\s*function\\s*`
+    : "";
+  const anonymousFuncREHead = `${anonymousFunctionName}\\(\\s*${params}\\s*\\)\\s*\\{`;
+  const anonymousFuncRegEx = includeBody
+    ? `${anonymousFuncREHead}${funcREBody}`
+    : `${anonymousFuncREHead}`;
+
+  return new RegExp(
+    `(${capture ? "" : "?:"}${funcRegEx}|${arrowFuncRegEx}|${anonymousFuncRegEx})`,
+  );
+}
+
+/**
+ * Generates a regex string to match a function expressions and declarations
+ * @param funcName - The name of the function to be matched
+ * @param paramList - Optional list of parameters to be matched
+ * @param options - Optional object determining whether to capture the match
+ * (defaults to non-capturing) and whether to include the body in the match (defaults
+ * to true)
+ * Specifically designed for Typescript
+ */
+
+export function typedFunctionRegex(
+  funcName: string | null,
+  paramList?: string[] | null,
+  options?: { capture?: boolean; includeBody?: boolean },
+): RegExp {
+  const capture = options?.capture ?? false;
+  const includeBody = options?.includeBody ?? true;
+  const params = paramList ? paramList.join("\\s*,\\s*") : "[^)]*";
+
+  const normalFunctionName = funcName ? "\\s" + escapeRegExp(funcName) : "";
+  const arrowFunctionName = funcName
+    ? `(let|const|var)?\\s?${escapeRegExp(funcName)}\\s*.*=\\s*`
+    : "";
+  const body = "[^}]*";
+
   const funcREHead = `function\\s*${normalFunctionName}\\s*\\(\\s*${params}\\s*\\)\\s*:?[\\s\\w]*?\\{`;
   const funcREBody = `${body}\\}`;
   const funcRegEx = includeBody
