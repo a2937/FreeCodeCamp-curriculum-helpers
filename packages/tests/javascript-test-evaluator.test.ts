@@ -202,5 +202,31 @@ assert.equal(x, 1)`;
         pass: true,
       });
     });
+
+    it("error response should include the name of IndexOfBoundsError when thrown in user code", async () => {
+      evaluator.init({
+        code: {},
+        source: `
+x = 0;`,
+      });
+
+      const test = "assert.equal(x, 0)";
+      const result = await evaluator.runTest(test);
+
+      expect(result).toStrictEqual({
+        err: {
+          message: "x is not defined",
+          name: "ReferenceError",
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          stack: expect.stringMatching("ReferenceError: x"),
+        },
+        logs: [
+          {
+            level: "error",
+            msg: "ReferenceError: x is not defined",
+          },
+        ],
+      });
+    });
   });
 });
