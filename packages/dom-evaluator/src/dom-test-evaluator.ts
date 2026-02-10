@@ -73,7 +73,7 @@ export class DOMTestEvaluator implements TestEvaluator {
         stack: error.stack,
         ...(!!error.expected && { expected: error.expected }),
         ...(!!error.actual && { actual: error.actual }),
-        type: error.name,
+        name: error.name,
       },
     };
   }
