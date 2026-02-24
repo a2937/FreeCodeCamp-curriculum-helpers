@@ -61,7 +61,6 @@ const browserConfig = (env = {}) => {
     output: {
       library: {
         type: "module",
-        // type: "commonjs-static",
       },
       filename: "index.mjs",
       path: path.resolve(__dirname, "dist/curriculum-helpers"),
@@ -83,10 +82,12 @@ const entrypointSources = [
   {
     name: "javascript-test-evaluator",
     path: __dirname + "/packages/javascript-evaluator/src",
+    isWorker: true,
   },
   {
     name: "python-test-evaluator",
     path: __dirname + "/packages/python-evaluator/src",
+    isWorker: true,
   },
 ];
 
@@ -102,14 +103,6 @@ const sharedSources = [
 ];
 
 const allSources = [...entrypointSources, ...sharedSources];
-
-const entry = entrypointSources.reduce(
-  (acc, { name, path }) => ({
-    ...acc,
-    [name]: `${path}/${name}.ts`,
-  }),
-  {},
-);
 
 const getTSRules = (isDev) =>
   allSources.map(({ name, path }) => ({
@@ -128,53 +121,61 @@ const getTSRules = (isDev) =>
     exclude: /node_modules/,
   }));
 
-const testRunnerConfig = (env = {}) => {
-  const isDev = env.development;
-  return {
-    name: "test-runner",
-    mode: isDev ? "development" : "production",
-    cache: isDev ? { type: "filesystem" } : false,
-    entry,
-    output: {
-      filename: "[name].js",
-      // during testing, we need the files to be available for the test server:
-      path: isDev
-        ? __dirname + "/__fixtures__/dist"
-        : __dirname + "/dist/test-runner",
-      clean: true,
-    },
-    module: {
-      rules: [
-        {
-          test: /\.py/,
-          type: "asset/source",
-        },
-        ...getTSRules(isDev),
-      ],
-    },
-    resolve: {
-      fallback: {
-        // buffer: require.resolve("buffer"),
-        util: require.resolve("util"),
-        stream: false,
-        process: require.resolve("process/browser.js"),
-        timers: require.resolve("timers-browserify"),
+const testRunnerConfig =
+  (entry, name, isWorker) =>
+  (env = {}) => {
+    const isDev = env.development;
+    return {
+      name: `test-runner-${name}`,
+      mode: isDev ? "development" : "production",
+      cache: isDev ? { type: "filesystem" } : false,
+      entry,
+      output: {
+        filename: "[name].js",
+        // during testing, we need the files to be available for the test server:
+        path: isDev
+          ? __dirname + "/__fixtures__/dist"
+          : __dirname + "/dist/test-runner",
+        ...(isWorker && { chunkLoading: "import-scripts" }),
       },
-      extensions: [".ts", ".js"],
-    },
-    plugins: [
-      new webpack.ProvidePlugin({
-        process: "process/browser",
-      }),
-      // @sinon/fake-timers can use 'timers/promises' if it's available, but
-      // 'timers-browserify' does not include it. This means webpack has to be
-      // told to ignore it, otherwise it will throw an error when trying to
-      // build.
-      new webpack.IgnorePlugin({
-        resourceRegExp: /timers\/promises/,
-      }),
-    ],
+      module: {
+        rules: [
+          {
+            test: /\.py/,
+            type: "asset/source",
+          },
+          ...getTSRules(isDev),
+        ],
+      },
+      resolve: {
+        fallback: {
+          // buffer: require.resolve("buffer"),
+          util: require.resolve("util"),
+          stream: false,
+          process: require.resolve("process/browser.js"),
+          timers: require.resolve("timers-browserify"),
+        },
+        extensions: [".ts", ".js"],
+      },
+      plugins: [
+        new webpack.ProvidePlugin({
+          process: "process/browser",
+        }),
+        // @sinon/fake-timers can use 'timers/promises' if it's available, but
+        // 'timers-browserify' does not include it. This means webpack has to be
+        // told to ignore it, otherwise it will throw an error when trying to
+        // build.
+        new webpack.IgnorePlugin({
+          resourceRegExp: /timers\/promises/,
+        }),
+      ],
+    };
   };
-};
 
-module.exports = [nodeConfig, browserConfig, testRunnerConfig];
+const testRunnerConfigs = entrypointSources.map(({ name, path, isWorker }) => {
+  const entry = { [name]: `${path}/${name}.ts` };
+
+  return testRunnerConfig(entry, name, isWorker);
+});
+
+module.exports = [nodeConfig, browserConfig, ...testRunnerConfigs];

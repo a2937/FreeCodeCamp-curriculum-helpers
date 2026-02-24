@@ -22,5 +22,6 @@ export default defineConfig({
     include: integrationTests,
     exclude: [...configDefaults.exclude, "packages/*/build", "dist"],
     globalSetup: "vitest-environment-puppeteer/global-init",
+    setupFiles: ["./packages/shared/tooling/webpack-compile.ts"],
   },
 });

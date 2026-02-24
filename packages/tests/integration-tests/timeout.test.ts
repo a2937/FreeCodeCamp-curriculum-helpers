@@ -1,11 +1,8 @@
-import { compileForTests } from "../../shared/tooling/webpack-compile";
-
 describe("Worker Timeouts", () => {
   beforeAll(async () => {
-    compileForTests();
     await page.goto("http://localhost:8080/");
-    // It shouldn't take this long, particularly not once cached, but just to be
-    // safe
+    // It shouldn't take this long, particularly now that webpack is used in a
+    // setup file, but just to be safe
   }, 20000);
 
   page.on("console", (msg) => {
