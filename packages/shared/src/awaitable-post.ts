@@ -16,7 +16,9 @@ export function post<Returned>({
       resolve(event.data as Returned);
     };
 
-    messenger.postMessage(message, {
+    const reformattedMessage: unknown = JSON.parse(JSON.stringify(message));
+
+    messenger.postMessage(reformattedMessage, {
       targetOrigin: "*",
       transfer: [channel.port2],
     });
